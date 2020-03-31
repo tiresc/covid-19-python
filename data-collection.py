@@ -1,6 +1,5 @@
 import csv
 import os 
-import time
 import numpy
 from pathlib import Path, PureWindowsPath
 from git_clone import git_clone
@@ -39,13 +38,10 @@ default_choice = len(file_list) - 1
 for i, v in enumerate(file_list):
 	print(i, v)
 
-choice = input("Which day would you like to see stats for?(leave blank to see most recent day)")
-if str(choice) >= '0':
-	print(file_list[choice])
-	file = str(file_list[choice])
-else:
-	print(file_list[default_choice])
-	file = str(file_list[default_choice])
+choice = int(input("Which day would you like to see stats for?(leave blank to see most recent day)"))
+print(file_list[choice])
+file = str(file_list[choice])
+
 
 filename = ('COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/' + file)
 
@@ -64,13 +60,13 @@ with f:
 		confirmed += int(row['Confirmed'])
 		deaths += int(row['Deaths'])
 		recovered += int(row['Recovered'])
-		active += int(row['Active'])
+		#active += int(row['Active'])
 
 def print_stats():
 	confirmed_string = str(confirmed)
 	print("Confirmed: ", confirmed_string[0:3]+ ',' + confirmed_string[3:6] )
 	print("Total Deaths: ", deaths)
 	print("Total Recovered: ", recovered)
-	print("Total Active: ", active)
+	#print("Total Active: ", active)
 
 print_stats()

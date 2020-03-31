@@ -1,75 +1,76 @@
-#pip pycurl
 import csv
 import os 
 import time
-import subprocess
+import numpy
 from pathlib import Path, PureWindowsPath
 from git_clone import git_clone
 from datetime import date
 
-today = date.today()
+def download_data():
+	if os.path.isdir('COVID-19'):
+		print("yes")
+		answer  = input("update?")
+		while answer == 'Y':
+			os.system('rmdir /Q /s COVID-19')
+			git_clone('https://github.com/CSSEGISandData/COVID-19.git')
+			answer = 'N'
+	else:
+		print("Downloading Covid-19 data...")
+		git_clone('https://github.com/CSSEGISandData/COVID-19.git')
 
-# dd/mm/YY
-month = 0
-day = 0
-year = 0
-month = int(today.strftime("%m"))
-day = int(today.strftime("%d"))
-year = '2020'
-print("d1 =", month, day)
 
+download_data()
 
-#stats = dict( Deaths=0, Recovered=0, Active=0 )
+file_list = []
+
 rootDir = '.'
-'''for dirName, subdirList, fileList,  in os.walk(rootDir):
-	print('%s' %dirName)
-	for fname in fileList:
-		print('\t%s' % fname)
-		if(fname == 'COVID-19'):
-			cloned = True'''
+print('csse_covid_19_daily_reports:')
 
+for dirName, subdirList, fileList in os.walk(rootDir):
+	if(dirName == '.\COVID-19\csse_covid_19_data\csse_covid_19_daily_reports'):
+		for fname in fileList:
+			file_list.append(fname)
+			
 
-#if os.path.isdir('COVID-19'):
-#	print("yes")
-#	os.system('rmdir /Q /s COVID-19')
-#	os.system('echo git clone https://github.com/CSSEGISandData/COVID-19.git')	
-#else:
+file_list.pop()
+file_list.pop(0)
+default_choice = len(file_list) - 1
 
-#os.system('echo git clone https://github.com/CSSEGISandData/COVID-19.git')
+for i, v in enumerate(file_list):
+	print(i, v)
 
-if os.path.isdir('COVID-19'):
-	print("yes")
-	os.system('rmdir /Q /s COVID-19')
-	git_clone('https://github.com/CSSEGISandData/COVID-19.git')
+choice = input("Which day would you like to see stats for?(leave blank to see most recent day)")
+if str(choice) >= '0':
+	print(file_list[choice])
+	file = str(file_list[choice])
 else:
-	print("no")
-	git_clone('https://github.com/CSSEGISandData/COVID-19.git')
+	print(file_list[default_choice])
+	file = str(file_list[default_choice])
 
-
-
-
-file = '0' + str(month) + '-' + str(day-1) + '-' + str(year) + '.csv'
 filename = ('COVID-19/csse_covid_19_data/csse_covid_19_daily_reports/' + file)
 
-# Convert path to Windows format
 confirmed = 0
 deaths = 0
 recovered = 0
 active = 0
 
 f = open(filename, 'r') 
-
 with f:
 	reader = csv.DictReader(f)
 	for row in reader:
+		#All available rows
 		#print(row['FIPS'], row['Admin2'], row['Province_State'], row['Country_Region'], row['Last_Update'], row['Lat'], row['Long_'], row['Confirmed'], row['Deaths'], row['Recovered'], row['Active'], row['Combined_Key'])
-		print(row['Province_State'],  row['Country_Region'], "Confirmed:", row['Confirmed'],"Deaths:", row['Deaths'], "Recovered:", row['Recovered'],"Active:", row['Active'])
+		#print(row['Province_State'],  row['Country_Region'], "Confirmed:", row['Confirmed'],"Deaths:", row['Deaths'], "Recovered:", row['Recovered'],"Active:", row['Active'])
 		confirmed += int(row['Confirmed'])
 		deaths += int(row['Deaths'])
 		recovered += int(row['Recovered'])
 		active += int(row['Active'])
-confirmed_string = str(confirmed)
-print("Confirmed: ", confirmed_string[0:3]+ ',' + confirmed_string[3:6] )
-print("Total Deaths: ", deaths)
-print("Total Recovered: ", recovered)
-print("Total Active: ", active)
+
+def print_stats():
+	confirmed_string = str(confirmed)
+	print("Confirmed: ", confirmed_string[0:3]+ ',' + confirmed_string[3:6] )
+	print("Total Deaths: ", deaths)
+	print("Total Recovered: ", recovered)
+	print("Total Active: ", active)
+
+print_stats()

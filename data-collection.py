@@ -1,6 +1,7 @@
 import csv
 import os 
 import numpy
+import platform
 from pathlib import Path, PureWindowsPath
 from git_clone import git_clone
 from datetime import date
@@ -21,15 +22,23 @@ def download_data():
 download_data()
 
 file_list = []
-
+unix_path = './COVID-19/csse_covid_19_data/csse_covid_19_daily_reports'
+path_on_windows = PureWindowsPath('./COVID-19/csse_covid_19_data/csse_covid_19_daily_reports')
 rootDir = '.'
 print('csse_covid_19_daily_reports:')
 
 for dirName, subdirList, fileList in os.walk(rootDir):
-	if(dirName == '.\COVID-19\csse_covid_19_data\csse_covid_19_daily_reports'):
-		for fname in fileList:
-			file_list.append(fname)
-			
+	#print(dirName)
+	if(platform.system() == 'Linux' or platform.system() == 'Darwin'):
+		if(dirName == unix_path):
+			for fname in fileList:
+				print("\t%s" % fname)
+				file_list.append(fname)		
+	else:
+		if(dirName == unix_path):
+			for fname in fileList:
+				print("\t%s" % fname)
+				file_list.append(fname)
 
 file_list.pop()
 file_list.pop(0)
@@ -38,7 +47,8 @@ default_choice = len(file_list) - 1
 for i, v in enumerate(file_list):
 	print(i, v)
 
-choice = int(input("Which day would you like to see stats for?(leave blank to see most recent day)"))
+choice = input("Which day would you like to see stats for?(leave blank to see most recent day)")
+choice = int(choice)
 print(file_list[choice])
 file = str(file_list[choice])
 
@@ -64,7 +74,7 @@ with f:
 
 def print_stats():
 	confirmed_string = str(confirmed)
-	print("Confirmed: ", confirmed_string[0:3]+ ',' + confirmed_string[3:6] )
+	print("Confirmed: ", confirmed_string)
 	print("Total Deaths: ", deaths)
 	print("Total Recovered: ", recovered)
 	#print("Total Active: ", active)

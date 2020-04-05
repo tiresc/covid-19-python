@@ -4,8 +4,6 @@ from PySide2 import QtCore, QtWidgets, QtGui
 import argparse
 import pandas as pd
 
-
-
 def read_data(fname):
     return pd.read_csv(fname)
 
